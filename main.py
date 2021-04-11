@@ -29,12 +29,9 @@ elif player_name == "Boring":
 
     player = Boring()
     
-elif player_name == "Ram":
+elif player_name == "RAM":
 
-    player = Ram()
-elif player_name == "Ram2":
-
-    player = Ram2()
+    player = RAM()
 
 else:
 
@@ -82,5 +79,11 @@ else:
 colors = [chr(i) for i in range(65,91)][:num_colors]
 
 mastermind = Mastermind(board_length, colors)
-
+#op = open("output.txt", "w")
+sys.stdout = open('RAM.txt', 'w')
 mastermind.play_tournament(player, scsa, num_rounds)
+sys.stdout.close()
+
+
+
+
