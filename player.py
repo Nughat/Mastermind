@@ -142,6 +142,7 @@ class RAM(Player):
         if scsa.name == "FirstLast":
             guess = []
             missingPositions = []
+
             if last_response:
                 self.responses.append(last_response)
 
@@ -150,7 +151,11 @@ class RAM(Player):
                 self.responses = [last_response]
                 self.positions = {}
 
-   # Throws first guess consisting of first color * board_length (i.e. if colors[0] == A with board size 4, then returns "AAAA")
+            if last_response[0] == board_length:
+                guess = self.prevGuesses[-1]
+                return guess
+
+            # Throws first guess consisting of first color * board_length (i.e. if colors[0] == A with board size 4, then returns "AAAA")
             if not self.prevGuesses:
                 guess = [colors[0] for i in range(board_length)]
                 self.prevGuesses.append(list_to_str(guess))
@@ -159,18 +164,22 @@ class RAM(Player):
                 guess = list(self.prevGuesses[-1])
 
             # Fills up the positions dictionary depending on previous responses and changes
-            if last_response[0] == board_length - 1 or (len(self.prevGuesses) > 1 and self.responses[-2][0] + 2 == last_response[0] and self.prevGuesses[-2] != self.prevGuesses[-1]):
+            if (last_response[0] == board_length - 1 and 0 not in self.positions) or (len(self.prevGuesses) > 1 and self.responses[-2][0] + 2 == last_response[0] and self.prevGuesses[-2] != self.prevGuesses[-1]):
                 self.positions[0] = self.prevGuesses[-1][0]
                 self.positions[board_length - 1] = self.prevGuesses[-1][0]
 
+            elif len(self.prevGuesses) > 1 and self.responses[-2][0] - 2 == last_response[0] and self.prevGuesses[-2] != self.prevGuesses[-1]:
+                self.positions[0] = self.prevGuesses[-2][0]
+                self.positions[board_length - 1] = self.prevGuesses[-2][0]
+
             elif (len(self.prevGuesses) > 1 and self.responses[-2][0] + 1 == last_response[0] and self.prevGuesses[-2] != self.prevGuesses[-1]):
                 for i in range(len(self.prevGuesses[-1])):
-                    if self.prevGuesses[-2][i] != self.prevGuesses[-1][i]:
-                        self.positions[i] = self.prevGuesses[-2][i]
+                    if self.prevGuesses[-2][i] != self.prevGuesses[-1][i] and i not in self.positions:
+                        self.positions[i] = self.prevGuesses[-1][i]
 
             elif (len(self.prevGuesses) > 1 and self.responses[-2][0] - 1 == last_response[0] and self.prevGuesses[-2] != self.prevGuesses[-1]):
                 for i in range(len(self.prevGuesses[-1])):
-                    if self.prevGuesses[-2][i] != self.prevGuesses[-1][i]:
+                    if self.prevGuesses[-2][i] != self.prevGuesses[-1][i] and i not in self.positions:
                         self.positions[i] = self.prevGuesses[-2][i]
 
             # Fills up missingPositions list and applies positions to the guess
@@ -189,8 +198,4 @@ class RAM(Player):
                 guess[missingPositions[0]] = colors[colors.index(guess[missingPositions[0]]) + 1]
 
             self.prevGuesses.append(list_to_str(guess))
-            #print("Response:", last_response)
-            #print("Positions:", self.positions)
-            #print("Missing positions:", missingPositions)
-            #print("New Guess:", list_to_str(self.prevGuesses[-1]))
             return list_to_str(guess)
