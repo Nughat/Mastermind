@@ -100,10 +100,10 @@ class RAM(Player):
     def __init__(self):
 
         self.player_name = "RAM"
-
-    guessnum = 0
-    guessecondnum = 0
-    guesses = []
+    #globals
+    guessnum = 0 #to find 1st color
+    guessecondnum = 0 #to find 2nd color based on the 1st color
+    guesses = [] #to store all guesses
     prevGuesses = []        # Holds all guesses attempted
     responses = []          # Holds all responses corresponding to previous guesses  
     positions = {}          # Holds position data in dictionary {position: character}
@@ -117,27 +117,27 @@ class RAM(Player):
                 self.guessnum = 0
                 self.guessecondnum = 0
                 self.guesses = []
-            if not self.guesses:              #throws a starting point guess if no guess have been made yet
-                color = colors[self.guessnum]
-                guess = list_to_str(color*board_length)
+            if not self.guesses:              #try AAAA on the first guess
+                color = colors[self.guessnum] #guessnum has value 0
+                guess = list_to_str(color*board_length) #guess will be the 0th element of colors, which is A
             if (self.guesses):                                           #If guesses have been made 
-                if (last_response[0] == 0 and last_response[1]== 0):    #0 pegs match exactly and there were noe right colors guessed
-                    self.guessnum = self.guessnum+1                      #increment guessnum
-                    self.guessecondnum = self.guessnum                   #B = 1     
+                if (last_response[0] == 0 and last_response[1]== 0):    #0 pegs match exactly and there were no right colors guessed
+                    self.guessnum = self.guessnum+1                      #increment guessnum, try the next color in colors
+                    self.guessecondnum = self.guessnum                   #update the var for the second color as well, since both colors will be found lexicographically (ex: BBBB has some correct colors, then the second color must be one that comes after B)    
                     color = colors[self.guessnum]                        #get the color of index guessnum
-                    guess = list_to_str(color*board_length)             #And make a guess from it by repeating color board_leng times
+                    guess = list_to_str(color*board_length)             #And make a guess from it by repeating color board_length times
                 elif (last_response[0] == 2):                            #2 colors in correct position
-                    color = [colors[self.guessnum],colors[self.guessecondnum+1],colors[self.guessnum],colors[self.guessecondnum+1]]
-                    guess = list_to_str(color)                       #then alternate colors with color in guessnum index and next one
-                    self.guessecondnum = self.guessecondnum+1            #make guess formatting correct and increment guesscondnum
-                elif (last_response[0] == 0 and (last_response[1] == 4 or last_response[1] == 2)):   
-                    color = self.guesses[-1]                             #this response indicates that either all were correct colors
-                    color.reverse()                                    #or one color was correct then take the reverse and format it
-                    guess = list_to_str(color)                           #to be a guess
+                    color = [colors[self.guessnum],colors[self.guessecondnum+1],colors[self.guessnum],colors[self.guessecondnum+1]] #assume that the colors in the correct position are the 0th and 2nd colors, so change the 1st and 3rd elements
+                    guess = list_to_str(color)                     
+                    self.guessecondnum = self.guessecondnum+1            #change the second color alphabetically until it is found 
+                elif (last_response[0] == 0 and (last_response[1] == 4 or last_response[1] == 2)): #the assumption from the last condition causes all colors to be in wrong position, meaning that the 1st and 3rd colors were in the correct position and the 0th and 2nd elements needed to be changed   
+                    color = self.guesses[-1]                             #by now, all colors are correct so just retrieve the previous guess
+                    color.reverse()                                    #reverse the previous guess
+                    guess = list_to_str(color)                          
 
             #print(guess, " ", last_response)
-            self.guesses.append(color)          #add color to guesses and return the guess
-            return guess
+            self.guesses.append(color)          #store all guesses in a list in case they are needed later on
+            return guess #return the guess
 #_____________________________________________________ First Last _______________________________________________________
         if scsa.name == "FirstLast":
             guess = []
