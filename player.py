@@ -199,3 +199,39 @@ class RAM(Player):
 
             self.prevGuesses.append(list_to_str(guess))
             return list_to_str(guess)
+        
+#_______________________________________________ Only Once ___________________________________________________ 
+        if scsa.name == "OnlyOnce":
+            guess = ""
+            if last_response[2] == 0:
+                self.prevGuesses = []
+                self.responses = [last_response]
+                self.positions = {}
+                self.colorsUsed = []
+                self.guessnum = 0
+            if not self.prevGuesses:                        #if no prevGuesses guess firstColor*b_l
+                guess = (colors[0]*board_length)
+                guess = list_to_str(guess)       
+                self.prevGuesses.append(list_to_str(guess))
+                return guess
+            if(last_response[1] == 0 and last_response[0] == 0): #no color and pegs match thus guess = nextcol*b_l
+                if self.guessnum < len(colors)-1:
+                    self.guessnum = self.guessnum + 1 #icrement guessnum
+                guess = (colors[self.guessnum]*board_length) #guess next colxb_l
+            if(last_response[1] == 0 and last_response[0] == 1 and len(self.colorsUsed) < board_length):#correct color
+                if(self.prevGuesses[-1][-1] not in self.colorsUsed):
+                    self.colorsUsed.append(self.prevGuesses[-1][-1]) #add color to list
+                if self.guessnum < len(colors)-1:
+                    self.guessnum = self.guessnum + 1 #icrement guessnum
+                guess = (colors[self.guessnum]*board_length)
+            if(len(self.colorsUsed) == board_length and last_response[1] <= board_length):
+                guess = list_to_str(random.sample(self.colorsUsed, k = board_length))
+                while (guess in self.prevGuesses):
+                    guess = list_to_str(random.sample(self.colorsUsed, k = board_length))
+            
+            guess = list_to_str(guess)       
+            self.prevGuesses.append(list_to_str(guess))
+            #print("list:", self.colorsUsed)
+            #print("list:", self.prevGuesses)
+            #print("guess: ",guess)
+            return guess
