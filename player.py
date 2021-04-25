@@ -200,38 +200,95 @@ class RAM(Player):
             self.prevGuesses.append(list_to_str(guess))
             return list_to_str(guess)
         
-#_______________________________________________ Only Once ___________________________________________________ 
-        if scsa.name == "OnlyOnce":
+#_______________________________________________ Two Color ___________________________________________________ 
+        if scsa.name == "TwoColor":
+            """
+            TwoColor scsa strategy is to first determine which two colors are in the code. If the colors are
+            A to G it will first guess each color x board_length until it finds the two colors used in the code.
+            When it finds that a color is in the code it also notes how many times that color appears in the code
+            to reduce the plausible pool of guesses. After all (board_length) elements of the code are added to 
+            a list these elements are combined in different random ways that were not previously guessed until
+            the correct code has been guessed.
+            """
             guess = ""
-            if last_response[2] == 0:
+            if last_response[2] == 0:                       #reset all global vars that were used 
                 self.prevGuesses = []
-                self.responses = [last_response]
-                self.positions = {}
                 self.colorsUsed = []
                 self.guessnum = 0
-            if not self.prevGuesses:                        #if no prevGuesses guess firstColor*b_l
-                guess = (colors[0]*board_length)
-                guess = list_to_str(guess)       
-                self.prevGuesses.append(list_to_str(guess))
-                return guess
-            if(last_response[1] == 0 and last_response[0] == 0): #no color and pegs match thus guess = nextcol*b_l
-                if self.guessnum < len(colors)-1:
-                    self.guessnum = self.guessnum + 1 #icrement guessnum
-                guess = (colors[self.guessnum]*board_length) #guess next colxb_l
-            if(last_response[1] == 0 and last_response[0] == 1 and len(self.colorsUsed) < board_length):#correct color
-                if(self.prevGuesses[-1][-1] not in self.colorsUsed):
-                    self.colorsUsed.append(self.prevGuesses[-1][-1]) #add color to list
-                if self.guessnum < len(colors)-1:
-                    self.guessnum = self.guessnum + 1 #icrement guessnum
-                guess = (colors[self.guessnum]*board_length)
-            if(len(self.colorsUsed) == board_length and last_response[1] <= board_length):
-                guess = list_to_str(random.sample(self.colorsUsed, k = board_length))
-                while (guess in self.prevGuesses):
-                    guess = list_to_str(random.sample(self.colorsUsed, k = board_length))
-            
-            guess = list_to_str(guess)       
-            self.prevGuesses.append(list_to_str(guess))
-            #print("list:", self.colorsUsed)
-            #print("list:", self.prevGuesses)
+            if not self.prevGuesses:                              #if no prevGuesses guess firstColor * b_l
+                guess = (colors[0] * board_length)                #i.e AAAAA
+                guess = list_to_str(guess)                        #convert guess to a string
+                self.prevGuesses.append(list_to_str(guess))       #add guess to prev guesses
+                return guess                                      #return guess
+            if (last_response[1] == 0 and last_response[0] == 0): #if no color and pegs match thus guess = nextcol*b_l
+                if self.guessnum < len(colors) - 1:               #if guessnum is not exceeding colors highest index
+                    self.guessnum = self.guessnum + 1             #increment guessnum
+                guess = (colors[self.guessnum]*board_length)      #guess next color x b_l
+            if (last_response[0] > 0 and len(self.colorsUsed) < board_length): #if last guess has one of the pegs colors
+                if(self.prevGuesses[-1][-1] not in self.colorsUsed):           #if the color has not already been added
+                    #print(self.prevGuesses[-1][-1])
+                    for i in range(last_response[0]):                          #add color into colors used amount of 
+                        self.colorsUsed.append(self.prevGuesses[-1][-1])       #times it appeared in last guess
+                if (self.guessnum < len(colors) - 1 and len(self.colorsUsed) < board_length): #if guessnum > col elements 
+                    self.guessnum = self.guessnum + 1                          #and not all cols have been found increment 
+                guess = (colors[self.guessnum] * board_length)                 #guessnum and guess next color x b_l
+            if (len(self.colorsUsed) == board_length):                         #if all col and frequency of cols have been found
+                guess = list_to_str(random.sample(self.colorsUsed, k = board_length))       #guess random combo w found colors
+                while (guess in self.prevGuesses):                                          #make sure guess hasnt already been 
+                    guess = list_to_str(random.sample(self.colorsUsed, k = board_length))   #guessed if so make another one until
+                                                                                            #you have a new guess
+            guess = list_to_str(guess)                   #convert guess to a string
+            self.prevGuesses.append(list_to_str(guess))  #add guess to previous guesses
+            #print("colorUsed:", self.colorsUsed)
+            #print("prevGuesses:", self.prevGuesses)
             #print("guess: ",guess)
-            return guess
+            return guess                                 #return guess
+
+#_______________________________________________ Only Once ___________________________________________________ 
+        if scsa.name == "OnlyOnce":
+            """
+            OnlyOnce scsa strategy is to determine which of the colors in colors are in the code. Once these colors
+            are dicerned they are added to a list. Once all pegs colors are determined, random guesses with these 
+            peg colors are made until the correct guess is generated.
+            """
+            guess = ""
+            if last_response[2] == 0:                       #reset all global vars that were used 
+                self.prevGuesses = []
+                self.colorsUsed = []
+                self.guessnum = 0
+            if (len(colors) == board_length): 
+                guess = list_to_str(random.sample(colors, k = board_length))       #guess random combo w colors
+                while (guess in self.prevGuesses):                                          #make sure guess hasnt already been 
+                    guess = list_to_str(random.sample(colors, k = board_length))   #guessed if so make another one until
+                guess = list_to_str(guess)                   #convert guess to a string
+                self.prevGuesses.append(list_to_str(guess))  #add guess to prev guesses
+                return guess   
+                
+            if not self.prevGuesses:                        #if no prevGuesses guess firstColor*b_l
+                guess = (colors[0] * board_length)
+                guess = list_to_str(guess)                  #convert guess to a string
+                self.prevGuesses.append(list_to_str(guess)) #add guess to prev guesses
+                return guess                                #return guess
+            
+            if (last_response[1] == 0 and last_response[0] == 0): #if no color and pegs match thus guess = nextcol*b_l
+                if self.guessnum < len(colors) - 1:               #if guessnum is not exceeding colors index
+                    self.guessnum = self.guessnum + 1             #increment guessnum
+                guess = (colors[self.guessnum]*board_length)      #guess next color x b_l
+            if (last_response[1] == 0 and last_response[0] == 1 and len(self.colorsUsed) < board_length): 
+                #if prevoius guess has one of the pegs colors
+                if(self.prevGuesses[-1][-1] not in self.colorsUsed):    #if the color has not already been added
+                    self.colorsUsed.append(self.prevGuesses[-1][-1])    #add color to the usedColors list
+                if self.guessnum < len(colors)-1:                       #if guessnum is not exceeding colors index
+                    self.guessnum = self.guessnum + 1                   #increment guessnum
+                guess = (colors[self.guessnum] * board_length)          #guess next color x b_l
+            if (len(self.colorsUsed) == board_length and last_response[1] <= board_length): #if all b_l cols were found
+                guess = list_to_str(random.sample(self.colorsUsed, k = board_length))       #guess random combo w found colors
+                while (guess in self.prevGuesses):                                          #make sure guess hasnt already been 
+                    guess = list_to_str(random.sample(self.colorsUsed, k = board_length))   #guessed if so make another one until
+                                                                                            #you have a new guess
+            guess = list_to_str(guess)                   #convert guess to a string
+            self.prevGuesses.append(list_to_str(guess))  #add guess to prev guesses
+            #print("colorUsed:", self.colorsUsed)
+            #print("prevGuesses:", self.prevGuesses)
+            #print("guess: ",guess)
+            return guess                                 #return guess
