@@ -164,6 +164,11 @@ class RAM(Player):
             return guess 
 #_____________________________________________________ First Last _______________________________________________________
         if scsa.name == "FirstLast":
+            """
+            FirstLast scsa strategy is to first identify the color that fills the first and last position, since they're always the
+            same. Once that color is found, each following guess will iterate through the other positions until the code is found. The list
+            missingPositions keeps track of what positions still need to be found.
+            """
             guess = []
             missingPositions = []
 
@@ -320,7 +325,7 @@ class RAM(Player):
 #_____________________________________________________ UsuallyFewer and PreferFewer _______________________________________________________
         if scsa.name == "UsuallyFewer" or scsa.name == "PreferFewer":
             """
-            Player's strategy for UsuallyFewer and PreferFewer is to first identify the colors being used. This is done the same way that the TwoColor
+            UsuallyFewer scsa and PreferFewer scsa strategy is to first identify the colors being used. This is done the same way that the TwoColor
             strategy identifies colors and occurance for each color, except there is an extra check for when there are more than 2 colors(if the list
             of correct colors with accurate occurance of each color != the board length, then there is at least one more color to find). After identifying 
             all the colors, player will use list of correct colors and occrances to generate random guesses. With each guess, it'll note any incorrect guesses
