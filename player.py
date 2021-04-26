@@ -108,6 +108,7 @@ class RAM(Player):
     responses = []          # Holds all responses corresponding to previous guesses  
     positions = {}          # Holds position data in dictionary {position: character}
     colorsUsed = []         # Holds all correct colors in a given code
+    num_bs = 0
     
 
     
@@ -162,6 +163,26 @@ class RAM(Player):
             #print("prevGuesses:", self.prevGuesses)
             #print("guess: ",guess)
             return guess 
+#_____________________________________________________ AB Color _______________________________________________________
+        if scsa.name == "ABColor":
+            if (last_response[2] == 0): #if the first guess of a round
+                guess = list_to_str('A'*board_length) #guess all As
+                self.num_bs = 0 #reset globals
+                self.guesses = []
+            if (last_response[2] == 1): #if 2nd guess
+                self.num_bs = board_length - last_response[0] #subtract the correct number of positions from the all As guess, since the remaining number of positions will be Bs 
+            if (last_response[2] > 0): #if not the first guess
+                while True:
+                    color = 'A'*board_length #generate an all As guess
+                    color = list(color) #turn it into list form to modify
+                    possible_indices = random.sample(range(0,board_length), k=self.num_bs) #choose indices to place bs in; the number of indices chosen are equal to the number of B positions that have been determined
+                    for i in possible_indices: #change those indices from As to Bs
+                        color[i] = 'B'
+                    guess = list_to_str(color) #generate the guess
+                    if not (guess in self.guesses): #check if the guess has already been made
+                        break #if not then make the guess and if so then make a new guess
+            self.guesses.append(guess) #save the guess to the list to keep track of the guesses made
+            return guess #return the guess
 #_____________________________________________________ First Last _______________________________________________________
         if scsa.name == "FirstLast":
             """
