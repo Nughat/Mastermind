@@ -372,3 +372,60 @@ class RAM(Player):
             guess = list_to_str(guess)              #convert guess to string
             self.prevGuesses.append(guess)          #add guess to record of guesses
             return(guess)
+
+#_____________________________________________________ PreferFewer _______________________________________________________
+        if scsa.name == "PreferFewer":
+            guess = ""
+            #print('response: ', last_response)
+            #reset variables
+            if last_response[2] == 0:       #no previous guesses               
+                self.colorsUsed = []        #stores correct colors
+
+                self.prevGuesses = []
+                self.responses = [last_response]
+                self.guessnum = 0
+
+            #IDENTIFY COLOR(S)
+            if not self.prevGuesses:                     #if this is the first guess
+                guess = (colors[0] * board_length)       #first guess is only the first color(ex: AAAA)
+                guess = list_to_str(guess)               #convert list to string
+                self.prevGuesses.append(guess)           #add guess to record of guesses
+                #print('guessnum: ', self.guessnum)
+                return(guess)
+
+            #if there is only one color(50% chance), it will be found here
+            if last_response[0] == 0 and last_response[1] == 0 and not self.colorsUsed:         #if a guess was made and nothing was ever found
+                if self.guessnum < len(colors) - 1:                                             #if the end of list of colors has not been reached
+                    self.guessnum += 1                                                          #+1 guess
+                    #print('guessnum: ', self.guessnum)
+                guess = (colors[self.guessnum] * board_length)                                  #try the next color
+                
+            
+
+            if last_response[0] > 0 and len(self.colorsUsed) < board_length:     #if the last guess had a correct color, and not all colors were found yet
+                if(self.prevGuesses[-1][-1] not in self.colorsUsed):             #if the color from the previous guess wasn't already recorded
+                    for i in range(last_response[0]):                            #for each occurance of color(noted by last_response[0])...
+                        self.colorsUsed.append(self.prevGuesses[-1][-1])         #...add color to list of confirmed colors
+
+            if self.colorsUsed and len(self.colorsUsed) != board_length:         #if at least one color was found but not all 
+                if self.guessnum < len(colors) - 1:                              #if the end of list of colors has not been reached
+                    self.guessnum += 1                                           #+1 guess
+                    #print('guessnum: ', self.guessnum)
+                guess = (colors[self.guessnum] * board_length)                   #try the next color
+
+            #if self.guessnum == len(colors) - 1 and not self.colorsUsed:
+
+
+            #By now we should know all the colors we need
+            #IDENTIFY POSITIONS
+            if len(self.colorsUsed) == board_length:                                           #if all colors were found
+                guess = list_to_str(random.sample(self.colorsUsed, k = board_length))          #generate a random guess using colors confirmed to be correct
+                while guess in self.prevGuesses:                                               #if that guess was already guessed
+                    guess = list_to_str(random.sample(self.colorsUsed, k = board_length))      #guess again
+
+            #print('guessnum: ', self.guessnum)
+            #print('guess: ', guess)
+            #print(self.prevGuesses[-1])
+            guess = list_to_str(guess)              #convert guess to string
+            self.prevGuesses.append(guess)          #add guess to record of guesses
+            return(guess)
