@@ -372,4 +372,70 @@ class RAM(Player):
             guess = list_to_str(guess)              #convert guess to string
             self.prevGuesses.append(guess)          #add guess to record of guesses
             return(guess)
+        
+        # #_____________________________________________________ Mystery 1-5 _______________________________________________________
+        if scsa.name[:-1] == "mystery":
+            guess = list_to_str(colors[0]*board_length)
+            probDist = []
+            
+            # The prob distributions were made by countin the amount of times each color occured in each position
 
+            if scsa.name[-1] == "1":
+                probDist = [
+                    {'C': 44, 'E': 50, 'D': 34, 'A': 37, 'B': 35},
+                    {'C': 47, 'E': 49, 'D': 41, 'A': 35, 'B': 28},
+                    {'C': 48, 'E': 43, 'B': 32, 'D': 32, 'A': 45},
+                    {'C': 51, 'E': 47, 'A': 43, 'D': 30, 'B': 29},
+                    {'C': 40, 'E': 43, 'A': 41, 'D': 39, 'B': 37},
+                    {'C': 53, 'E': 43, 'D': 29, 'A': 45, 'B': 30},
+                    {'C': 47, 'E': 44, 'D': 37, 'A': 41, 'B': 31}
+                ]
+
+            if scsa.name[-1] == "2":
+                probDist =  [
+                    {'A': 41, 'D': 48, 'C': 35, 'B': 40, 'E': 36},
+                    {'D': 34, 'C': 46, 'E': 44, 'A': 38, 'B': 38},
+                    {'C': 36, 'A': 54, 'D': 37, 'B': 41, 'E': 32},
+                    {'A': 41, 'D': 48, 'C': 35, 'B': 40, 'E': 36},
+                    {'D': 34, 'C': 46, 'E': 44, 'A': 38, 'B': 38},
+                    {'C': 36, 'A': 54, 'D': 37, 'B': 41, 'E': 32},
+                    {'A': 41, 'D': 48, 'C': 35, 'B': 40, 'E': 36}
+                ]
+
+            if scsa.name[-1] == "3":
+                probDist = [
+                    {'E': 31, 'D': 41, 'C': 44, 'A': 42, 'B': 42},
+                    {'A': 40, 'B': 27, 'E': 46, 'D': 49, 'C': 38},
+                    {'C': 33, 'B': 43, 'E': 42, 'D': 48, 'A': 34},
+                    {'E': 40, 'A': 40, 'B': 48, 'C': 40, 'D': 32},
+                    {'E': 40, 'D': 45, 'B': 35, 'C': 34, 'A': 46},
+                    {'A': 46, 'C': 40, 'B': 36, 'D': 41, 'E': 37},
+                    {'C': 39, 'B': 34, 'A': 48, 'D': 43, 'E': 36}
+                ]
+
+            if scsa.name[-1] == "4":
+                probDist = [
+                    {'B': 28, 'A': 44, 'E': 37, 'C': 49, 'D': 42},
+                    {'B': 42, 'A': 38, 'D': 35, 'C': 48, 'E': 37},
+                    {'C': 37, 'B': 37, 'D': 46, 'E': 41, 'A': 39},
+                    {'A': 36, 'B': 38, 'D': 46, 'E': 45, 'C': 35},
+                    {'A': 38, 'D': 40, 'E': 38, 'C': 38, 'B': 46},
+                    {'D': 39, 'A': 40, 'B': 50, 'C': 37, 'E': 34},
+                    {'D': 42, 'A': 36, 'B': 50, 'E': 31, 'C': 41}
+                ]
+
+            if scsa.name[-1] == "5":
+                probDist =  [
+                    {'C': 27, 'E': 48, 'B': 33, 'A': 43, 'D': 49},
+                    {'A': 49, 'D': 28, 'B': 47, 'E': 37, 'C': 39},
+                    {'C': 27, 'E': 48, 'B': 33, 'A': 43, 'D': 49},
+                    {'A': 49, 'D': 28, 'B': 47, 'E': 37, 'C': 39},
+                    {'C': 27, 'E': 48, 'B': 33, 'A': 43, 'D': 49},
+                    {'A': 49, 'D': 28, 'B': 47, 'E': 37, 'C': 39},
+                    {'C': 27, 'E': 48, 'B': 33, 'A': 43, 'D': 49}
+                ]
+
+            for i in range(board_length):
+                guess = random.choices(list(probDist[i].keys()), weights=list(probDist[i].values()), k=board_length)
+                
+            return list_to_str(guess)
