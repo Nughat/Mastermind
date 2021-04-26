@@ -319,11 +319,18 @@ class RAM(Player):
 
 #_____________________________________________________ UsuallyFewer and PreferFewer _______________________________________________________
         if scsa.name == "UsuallyFewer" or scsa.name == "PreferFewer":
+            """
+            Player's strategy for UsuallyFewer and PreferFewer is to first identify the colors being used. This is done the same way that the TwoColor
+            strategy identifies colors and occurance for each color, except there is an extra check for when there are more than 2 colors(if the list
+            of correct colors with accurate occurance of each color != the board length, then there is at least one more color to find). After identifying 
+            all the colors, player will use list of correct colors and occrances to generate random guesses. With each guess, it'll note any incorrect guesses
+            so that it won't attempt that guess again.
+            """
             guess = ""
             #print('response: ', last_response)
             #reset variables
             if last_response[2] == 0:       #no previous guesses               
-                self.colorsUsed = []        #stores correct colors
+                self.colorsUsed = []        #stores correct colors and occurance of each color
 
                 self.prevGuesses = []
                 self.responses = [last_response]
@@ -355,8 +362,6 @@ class RAM(Player):
                     self.guessnum += 1                                           #+1 guess
                     #print('guessnum: ', self.guessnum)
                 guess = (colors[self.guessnum] * board_length)                   #try the next color
-
-            #if self.guessnum == len(colors) - 1 and not self.colorsUsed:
 
 
             #By now we should know all the colors we need
