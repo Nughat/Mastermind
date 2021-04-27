@@ -466,7 +466,6 @@ class RAM(Player):
                     {'C': 27, 'E': 48, 'B': 33, 'A': 43, 'D': 49}
                 ]
 
-            for i in range(board_length):
-                guess = random.choices(list(probDist[i].keys()), weights=list(probDist[i].values()), k=board_length)
+            guess = random.choices(list(probDist[i].keys()), weights=list(probDist[i].values()), k=board_length)
                 
             return list_to_str(guess)
